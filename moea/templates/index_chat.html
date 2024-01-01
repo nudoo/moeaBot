@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-dialog"></div>
+        <div id="user-input">
+            <input type="text" id="user-message" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userMessage = document.getElementById('user-message').value;
+
+            // Display user message in the chat dialog
+            displayMessage('User', userMessage);
+
+            // Send the user message to the server
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user_message=' + encodeURIComponent(userMessage),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display server response in the chat dialog
+                displayMessage('Server', data.server_response);
+            });
+
+            // Clear the user input field
+            document.getElementById('user-message').value = '';
+        }
+
+        function displayMessage(sender, message) {
+            var chatDialog = document.getElementById('chat-dialog');
+            var messageElement = document.createElement('div');
+            messageElement.innerHTML = '<strong>' + sender + ':</strong> ' + message;
+            chatDialog.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>
